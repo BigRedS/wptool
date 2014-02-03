@@ -12,10 +12,9 @@ my $opts = {};
 GetOptions(
 	'check'     => \$opts->{'check'},
 	'diff:s'    => \$opts->{'diff'},
-	'fix'       => \$opts->{'fix'},
+	'fix:s'       => \$opts->{'fix'},
 	'mysql'     => \$opts->{'mysql'},
 	'version=s' => \$opts->{'version'},
-
 );
 
 
@@ -35,7 +34,7 @@ if($opts->{'mysql'}){
 	exec(sqlShellCmd());
 }
 
-if(exists($opts->{'diff'})){
+if(defined($opts->{'diff'})){
 	my @files;
 	if($opts->{'diff'} eq ""){
 		my ($changes, undef) = checkFiles($dir);
@@ -73,33 +72,38 @@ if(exists($opts->{'diff'})){
 	exit(0);
 }
 
+if(defined($opts->{'fix'})){
+	if($opts->{'fix'} eq ""){
+		my ($changes,$absences) = checkFiles($dir);
+		foreach my $file (keys(%$changes)){
+			print "Changed: $file";
+			my $goodSum = $changes->{$file}->[0];
+			print " replaced\n" if cleanFile($file, $goodSum)
+		}
+		foreach my $file(keys(%$absences)){
+			print "Missing: $file";
+			my $goodSum = $changes->{$file}->[0];
+			print " replaced\n" if cleanFile($file, $goodSum)
+		}
+	}else{
+		my $sums = getMd5Sums();
+		my $sum = $sums->{$opts->{'fix'}};
+		cleanFile($opts->{'fix'}, $sum);
+	}
+}
+
+
 if($opts->{'check'}){
 	my($changes,$absences) = checkFiles($dir);
-	
-	unless(defined($changes) || defined($absences)){
+		unless(defined($changes) || defined($absences)){
 		print "Looks good\n";
 		exit;
 	}
-	
 	foreach my $file (keys(%$changes)){
-		if($opts->{'fix'}){
-			print "Changed: $file";
-			my $goodSum = $changes->{$file}->[0];
-			cleanFile($dir, $file, $goodSum) if ($opts->{'fix'});
-			print " replaced\n";
-		}else{	
-			print "changed: $file\n";
-		}
+		print "changed: $file\n";
 	}
 	foreach my $file(keys(%$absences)){
-		if($opts->{'fix'}){
-			print "Missing: $file";
-			my $goodSum = $changes->{$file}->[0];
-			cleanFile($dir, $file, $goodSum) if ($opts->{'fix'});
-			print " replaced\n";
-		}else{	
-			print "missing: $file\n";
-		}
+		print "missing: $file\n";
 	}
 }
 exit;
