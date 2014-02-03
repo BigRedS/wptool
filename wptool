@@ -1,9 +1,11 @@
 #! /usr/bin/perl
 
+use lib "./lib/";
 use strict;
 use Wordpress;
 use Data::Dumper;
 use Getopt::Long;
+
 
 my $opts = {};
 GetOptions(
