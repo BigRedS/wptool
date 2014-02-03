@@ -3,7 +3,6 @@
 use strict;
 use Wordpress;
 use Data::Dumper;
-use Text::Diff;
 use Getopt::Long;
 
 my $opts = {};
