@@ -10,15 +10,14 @@ GetOptions(
 	'check'   => \$opts->{'check'},
 	'fix'     => \$opts->{'fix'},
 	'mysql'   => \$opts->{'mysql'},
-	'print'   => \$opts->{'print'},
 	'version=s' => \$opts->{'version'},
 
 );
 
+
 my $dir = shift;
 if(!$dir){
-	print "Idiot.\n";
-	exit;
+	usage(255);
 }
 
 
@@ -62,3 +61,19 @@ if($opts->{'check'}){
 	}
 }
 exit;
+
+
+sub usage {
+my $exit = shift;
+print <<"EOF";
+  wp-tool [dir] [options]
+
+  Options:
+    --check   Check MD5Sums
+    --fix     Check MD5Sums and replace changed files with new ones
+    --mysql   Start a MySQL shell using credentials in wp-config.php
+    --version Print Wordpress version
+EOF
+
+exit $exit;
+}
