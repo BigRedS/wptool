@@ -5,17 +5,21 @@ package Wordpress;
 use LWP::Simple; 
 use Digest::MD5 qw/md5_hex/;
 use Data::Dumper;
+use File::Temp qw/tempfile/;
+use Term::ANSIColor;
 
 use strict;
 use Exporter;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 @ISA    = qw/Exporter/;
-@EXPORT = qw/documentRoot checkFiles fullPath catFile cleanFile sqlShellCmd setVersion installWordpress/;
+@EXPORT = qw/documentRoot checkFiles fullPath catFile cleanFile sqlShellCmd setVersion installWordpress diffFile/;
 
 use constant PHP => "/usr/bin/php";
 use constant WPSUMS_WORDPRESSES_URL => "http://wpsums/wordpresses/";
 use constant MD5SUMS_FILE => "md5sums.txt";
+use constant DIFF => "/usr/bin/diff";
+use constant DIFF_OPTS => "";
 
 my $wpFiles = {
 	version => "wp-includes/version.php",
@@ -141,16 +145,35 @@ sub fullPath{
 	return $fullPath;
 }
 
+sub downloadFile{
+	my $url = shift;
+	my $path = shift;
+	my $status = getstore($url, $path);
+	if(is_error($status)){
+		print STDERR "Download failed [$status]\n";
+		return;
+	}
+	return $path;
+}
+
+sub diffFile{
+	my $file = shift;
+	my $fullPath = fullPath($file);
+  my $url = _getUrl($file);
+	my ($fh_tmp, $f_tmp) = tempfile();
+	downloadFile($url, $f_tmp);
+	my $cmd = join(" ", DIFF, DIFF_OPTS, $f_tmp, $fullPath);
+	my @lines = `$cmd`;
+	return @lines;
+}
+
 sub cleanFile{
 	my $dir = shift;
 	my $file = shift;
 	my $sum = shift;
 	my $url = _getUrl($file);
 	my $fullPath = fullPath($file);
-	my $status = getstore($url, $fullPath);
-	if(is_error($status)){
-		print STDERR "Download failed [$status]\n";
-	}
+	downloadFile($url, $fullPath);
 	if(fileHasChanged($fullPath, $sum)){
 		_warning("Attempted to replace '$fullPath'; failed");
 		return;

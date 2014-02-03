@@ -5,13 +5,15 @@ use strict;
 use Wordpress;
 use Data::Dumper;
 use Getopt::Long;
+use Term::ANSIColor;
 
 
 my $opts = {};
 GetOptions(
-	'check'   => \$opts->{'check'},
-	'fix'     => \$opts->{'fix'},
-	'mysql'   => \$opts->{'mysql'},
+	'check'     => \$opts->{'check'},
+	'diff:s'    => \$opts->{'diff'},
+	'fix'       => \$opts->{'fix'},
+	'mysql'     => \$opts->{'mysql'},
 	'version=s' => \$opts->{'version'},
 
 );
@@ -31,6 +33,44 @@ if($opts->{'version'}){
 
 if($opts->{'mysql'}){
 	exec(sqlShellCmd());
+}
+
+if(exists($opts->{'diff'})){
+	my @files;
+	if($opts->{'diff'} eq ""){
+		my ($changes, undef) = checkFiles($dir);
+		@files = keys(%$changes);
+	}else{
+		push(@files, $opts->{'diff'});
+	}
+	print "# ";
+	print color "red";
+	print "< = Lines removed\n";
+	print color "reset";
+	print "# ";
+	print color "green";
+	print "> = Lines added\n";
+	print color "reset";
+	foreach my $file (@files){
+		print color "bold blue";
+		print "$file:\n";
+		print color "reset";
+		my @lines = diffFile($file);
+	  foreach my $line (@lines){
+			if($line =~ m/^</){
+				print color "red";
+				print $line;
+				print color "reset";
+			}elsif($line =~ m/^>/){
+				print color "green";
+				print $line;
+				print color "reset";
+			}else{
+				print $line;
+			}
+		}
+	}
+	exit(0);
 }
 
 if($opts->{'check'}){
@@ -71,10 +111,12 @@ print <<"EOF";
   wp-tool [dir] [options]
 
   Options:
-    --check   Check MD5Sums
-    --fix     Check MD5Sums and replace changed files with new ones
-    --mysql   Start a MySQL shell using credentials in wp-config.php
-    --version Print Wordpress version
+    --check        Check MD5Sums
+    --diff [path]  Show a diff of all changed files or, optionally, of the 
+                   file at [path] relative to the dir.
+    --fix          Check MD5Sums and replace changed files with new ones
+    --mysql        Start a MySQL shell using credentials in wp-config.php
+    --version      Print Wordpress version
 EOF
 
 exit $exit;
