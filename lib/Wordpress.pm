@@ -13,7 +13,7 @@ use Exporter;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 @ISA    = qw/Exporter/;
-@EXPORT = qw/documentRoot checkFiles fullPath catFile cleanFile sqlShellCmd setVersion installWordpress diffFile/;
+@EXPORT = qw/documentRoot checkFiles fullPath catFile cleanFile sqlShellCmd setVersion installWordpress diffFile getMd5Sums/;
 
 use constant PHP => "/usr/bin/php";
 use constant WPSUMS_WORDPRESSES_URL => "http://wpsums.avi.co/wordpresses/";
@@ -150,7 +150,7 @@ sub downloadFile{
 	my $path = shift;
 	my $status = getstore($url, $path);
 	if(is_error($status)){
-		print STDERR "Download failed [$status]\n";
+		print STDERR "Download failed [$status] ($url)\n";
 		return;
 	}
 	return $path;
@@ -168,14 +168,14 @@ sub diffFile{
 }
 
 sub cleanFile{
-	my $dir = shift;
+#	my $dir = shift;
 	my $file = shift;
 	my $sum = shift;
 	my $url = _getUrl($file);
 	my $fullPath = fullPath($file);
 	downloadFile($url, $fullPath);
 	if(fileHasChanged($fullPath, $sum)){
-		_warning("Attempted to replace '$fullPath'; failed");
+		_warning("\nERROR: Attempted to replace '$fullPath'; failed $!");
 		return;
 	}
 	return $sum;
@@ -211,6 +211,9 @@ sub _error{
 	exit 1;
 } 
 
-
+sub _warning{
+	my $message = shift;
+	print STDERR $message, "\n";
+}
 
 1
