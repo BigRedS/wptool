@@ -1,0 +1,65 @@
+#! /usr/bin/perl
+
+use strict;
+use Wordpress;
+use Data::Dumper;
+use Text::Diff;
+use Getopt::Long;
+
+my $opts = {};
+GetOptions(
+	'check'   => \$opts->{'check'},
+	'fix'     => \$opts->{'fix'},
+	'mysql'   => \$opts->{'mysql'},
+	'print'   => \$opts->{'print'},
+	'version=s' => \$opts->{'version'},
+
+);
+
+my $dir = shift;
+if(!$dir){
+	print "Idiot.\n";
+	exit;
+}
+
+
+my $versions = documentRoot($dir);
+if($opts->{'version'}){
+	print $versions->{'wp_version'}, "\n";	
+	exit 0;
+}
+
+if($opts->{'mysql'}){
+	exec(sqlShellCmd());
+}
+
+if($opts->{'check'}){
+	my($changes,$absences) = checkFiles($dir);
+	
+	unless(defined($changes) || defined($absences)){
+		print "Looks good\n";
+		exit;
+	}
+	
+	foreach my $file (keys(%$changes)){
+		if($opts->{'fix'}){
+			print "Changed: $file";
+			my $goodSum = $changes->{$file}->[0];
+			cleanFile($dir, $file, $goodSum) if ($opts->{'fix'});
+			print " replaced\n";
+		}else{	
+			print "changed: $file\n";
+		}
+	}
+	foreach my $file(keys(%$absences)){
+		if($opts->{'fix'}){
+			print "Missing: $file";
+			my $goodSum = $changes->{$file}->[0];
+			cleanFile($dir, $file, $goodSum) if ($opts->{'fix'});
+			print " replaced\n";
+		}else{	
+			print "missing: $file\n";
+		}
+	}
+}
+exit;
