@@ -15,7 +15,15 @@ Usage:
         --mysql        Start a MySQL shell using credentials in wp-config.php
         --version      Print Wordpress version
 
-Options are more like (and should probably be called as) commands:
+The options are more like (and should probably be called as) commands. This tool 
+uses a repository of Wordpress installs and associated MD5sum text files that can
+be found here:
+
+    http://wpsums.avi.co/
+
+You can use a different URL by setting the evironment variable `WPSUMS_WORDPRESSES_URL`; 
+that should be a URL to a directory containing a series of subdirectories each named
+for a specific version; http://wpsums.avi.co/wordpresses/ is the default.
 
 check
 -----

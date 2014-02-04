@@ -16,7 +16,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @EXPORT = qw/documentRoot checkFiles fullPath catFile cleanFile sqlShellCmd setVersion installWordpress diffFile getMd5Sums/;
 
 use constant PHP => "/usr/bin/php";
-use constant WPSUMS_WORDPRESSES_URL => "http://wpsums.avi.co/wordpresses/";
+use constant WPSUMS_WORDPRESSES_URL => $ENV{'WPSUMS_WORDPRESSES_URL'} || "http://wpsums.avi.co/wordpresses/";
 use constant MD5SUMS_FILE => "md5sums.txt";
 use constant DIFF => "/usr/bin/diff";
 use constant DIFF_OPTS => "";
