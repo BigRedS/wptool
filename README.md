@@ -84,3 +84,13 @@ therein:
     
     MariaDB [wordpress]> 
 
+
+version
+-------
+
+Prints the version string as found in version.php:
+
+    avi@amazing:~$ wptool /home/avi/web/wordpress/public_html/ --version
+    3.8.1
+		avi@amazing:~$
+
