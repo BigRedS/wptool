@@ -6,22 +6,33 @@ use Data::Dumper;
 use Getopt::Long;
 use Term::ANSIColor;
 
-
 my $opts = {};
 GetOptions(
 	'check'     => \$opts->{'check'},
 	'diff:s'    => \$opts->{'diff'},
-	'fix:s'       => \$opts->{'fix'},
+	'fix:s'     => \$opts->{'fix'},
+	'help|h|?'  => \$opts->{'help'},
 	'mysql'     => \$opts->{'mysql'},
+	'perms'     => \$opts->{'fixperms'},
 	'version:s' => \$opts->{'version'},
-);
+	'V'         => \$opts->{'ourversion'},
+) or do{ print "Error parsing arguments\n"; usage(255);};
 
+
+
+if(exists($opts->{'ourversion'})){
+	version();
+	exit 0;
+}
+
+if(exists($opts->{'help'})){
+	usage(0);
+}
 
 my $dir = shift;
 if(!$dir){
 	usage(255);
 }
-
 
 my $versions = documentRoot($dir);
 if(defined($opts->{'version'}) && $opts->{'version'} eq ""){
@@ -118,6 +129,7 @@ print <<"EOF";
     --diff [path]  Show a diff of all changed files or, optionally, of the 
                    file at [path] relative to the dir.
     --fix          Check MD5Sums and replace changed files with new ones
+    --help         See this help
     --mysql        Start a MySQL shell using credentials in wp-config.php
     --version      Print Wordpress version
 EOF
