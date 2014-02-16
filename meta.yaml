@@ -1,0 +1,13 @@
+---
+dir_map:
+  ulib: /usr/lib
+  ubin: /usr/bin
+description: Command-line tool for interfering with a Wordpress installation
+maintainer: "Avi Greenbury <ialoneambest@gmail.com>"
+package: wp-tool
+requires:
+  perl: 0
+  mysql-client: 0
+  # For md5sum:
+  coreutils: 0
+
