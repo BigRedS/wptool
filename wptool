@@ -1,8 +1,7 @@
 #! /usr/bin/perl
 
-use lib "./lib/";
 use strict;
-use Wordpress;
+use WpTool::Utilities;
 use Data::Dumper;
 use Getopt::Long;
 use Term::ANSIColor;
