@@ -13,13 +13,15 @@ use Exporter;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 @ISA    = qw/Exporter/;
-@EXPORT = qw/documentRoot checkFiles fullPath catFile cleanFile sqlShellCmd setVersion installWordpress diffFile getMd5Sums/;
+@EXPORT = qw/documentRoot checkFiles fullPath catFile cleanFile sqlShellCmd setVersion installWordpress diffFile getMd5Sums version/;
 
 use constant PHP => "/usr/bin/php";
 use constant WPSUMS_WORDPRESSES_URL => $ENV{'WPSUMS_WORDPRESSES_URL'} || "http://wpsums.avi.co/wordpresses/";
 use constant MD5SUMS_FILE => "md5sums.txt";
 use constant DIFF => "/usr/bin/diff";
 use constant DIFF_OPTS => "";
+
+our $VERSION=0.20140216;
 
 my $wpFiles = {
 	version => "wp-includes/version.php",
@@ -216,4 +218,7 @@ sub _warning{
 	print STDERR $message, "\n";
 }
 
-1
+sub version{
+	print $VERSION, "\n";
+}
+				1
