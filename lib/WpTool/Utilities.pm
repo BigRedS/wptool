@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-package Wordpress;
+package WpTool::Utilities;
 
 use LWP::Simple; 
 use Digest::MD5 qw/md5_hex/;
