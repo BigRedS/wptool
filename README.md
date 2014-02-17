@@ -93,6 +93,25 @@ therein:
     MariaDB [wordpress]> 
 
 
+perms
+-----
+
+Finds the owner of the directory passed and prompts to run these commands on it:
+
+    chown <user>:www-data <dir> -R
+    find <dir> -type f -exec chmod 740 {} \;
+    find <dir> -type d -exec chmod 750 {} \;
+	  chmod g+rws,u+s <dir>/wp-content/uploads -R
+
+And, if <dir>/cgi-bin is found:
+
+		chown <user>:<user> <dir>/cgi-bin/ -R
+		chmod 755 <dir>/cgi-bin/ -R
+
+The username may be overriden with the `--user` switch; you are prompted
+with the suggested commands before they are run.
+
+
 version
 -------
 
