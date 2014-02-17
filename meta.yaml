@@ -1,7 +1,7 @@
 ---
 dir_map:
   ulib: /usr/lib
-  bin: /usr/bin
+  bin: /usr/sbin
 description: Command-line tool for interfering with a Wordpress installation
 maintainer: "Avi Greenbury <ialoneambest@gmail.com>"
 package: wp-tool
