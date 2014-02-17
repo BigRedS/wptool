@@ -5,7 +5,7 @@ A command-line tool for looking at and fixing Wordpress installs.
 
 Usage:
 
-      wp-tool [dir] [options]
+      wptool [dir] [options]
     
       Options:
         --check        Check MD5Sums
@@ -18,7 +18,7 @@ Usage:
                        to set them
         --user [name]  Override the unix user guessed by --perms
         --version      Print Wordpress version
-        -V             Print the version of wp-tool
+        -V             Print the version of wptool
 
 
 The options are more like (and should probably have been implemented as) commands. This 

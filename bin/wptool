@@ -153,7 +153,7 @@ exit;
 sub usage {
 my $exit = shift;
 print <<"EOF";
-  wp-tool [dir] [options]
+  wptool [dir] [options]
 
   Options:
     --check        Check MD5Sums
@@ -166,7 +166,7 @@ print <<"EOF";
                    to set them
     --user [name]  Override the unix user guessed by --perms
     --version      Print Wordpress version
-    -V             Print the version of wp-tool
+    -V             Print the version of wptool
 EOF
 
 exit $exit;

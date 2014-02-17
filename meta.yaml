@@ -4,7 +4,7 @@ dir_map:
   bin: /usr/sbin
 description: Command-line tool for interfering with a Wordpress installation
 maintainer: "Avi Greenbury <ialoneambest@gmail.com>"
-package: wp-tool
+package: wptool
 requires:
   perl: 0
   mysql-client: 0
