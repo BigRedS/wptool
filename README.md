@@ -5,18 +5,24 @@ A command-line tool for looking at and fixing Wordpress installs.
 
 Usage:
 
-    wptool [dir] [options]
-     
+      wp-tool [dir] [options]
+    
       Options:
         --check        Check MD5Sums
         --diff [path]  Show a diff of all changed files or, optionally, of the 
                        file at [path] relative to the dir.
         --fix          Check MD5Sums and replace changed files with new ones
+        --help         See this help
         --mysql        Start a MySQL shell using credentials in wp-config.php
+        --perms        Guess at sensible fs ownership and permissions; prompt 
+                       to set them
+        --user [name]  Override the unix user guessed by --perms
         --version      Print Wordpress version
+        -V             Print the version of wp-tool
 
-The options are more like (and should probably be called as) commands. This tool 
-uses a repository of Wordpress installs and associated MD5sum text files that can
+
+The options are more like (and should probably have been implemented as) commands. This 
+tool uses a repository of Wordpress installs and associated MD5sum text files that can
 be found here:
 
     http://wpsums.avi.co/
