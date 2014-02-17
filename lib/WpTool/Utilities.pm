@@ -13,7 +13,7 @@ use Exporter;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 @ISA    = qw/Exporter/;
-@EXPORT = qw/documentRoot checkFiles fullPath catFile cleanFile sqlShellCmd setVersion installWordpress diffFile getMd5Sums version/;
+@EXPORT = qw/documentRoot checkFiles fullPath catFile cleanFile sqlShellCmd setVersion installWordpress diffFile getMd5Sums version getFixPermsCommands guessUnixUser/;
 
 use constant PHP => "/usr/bin/php";
 use constant WPSUMS_WORDPRESSES_URL => $ENV{'WPSUMS_WORDPRESSES_URL'} || "http://wpsums.avi.co/wordpresses/";
@@ -204,6 +204,37 @@ sub parseVariables{
 		}
 	}
 	return $vars;
+}
+
+sub getFixPermsCommands{
+	my $user = shift;
+	my $wpuploads = $dir."/wp-content/uploads";
+	my $cgibin = $dir."/cgi-bin";
+	$wpuploads =~ s#//#/#g;
+	$cgibin =~ s#//#/#g;
+	$dir =~ s#//#/#g;
+
+	my @cmds;
+	push(@cmds, "chown $user:www-data $dir -R");
+	push(@cmds, "find $dir -type f -exec chmod 740 {} ".'\;');
+	push(@cmds, "find $dir -type d -exec chmod 750 {} ".'\;');
+	push(@cmds, "chmod g+rws,u+s $wpuploads -R");
+	if( -d $cgibin ){
+		push(@cmds, "chown $user:$user $cgibin -R");
+		push(@cmds, "chmod 755 $cgibin -R");
+	}
+	return @cmds;
+}
+
+sub guessUnixUser{
+	my $uid = (stat($dir))[4];
+	if($uid =~ /\d+/){
+		if(my $uname = getpwuid($uid)){
+			return $uname;
+		}
+		return $uid;
+	}
+	return (split(m#\/#, $dir))[2];
 }
 
 

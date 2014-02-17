@@ -14,18 +14,19 @@ GetOptions(
 	'help|h|?'  => \$opts->{'help'},
 	'mysql'     => \$opts->{'mysql'},
 	'perms'     => \$opts->{'fixperms'},
+	'user=s'    => \$opts->{'unixuser'},
 	'version:s' => \$opts->{'version'},
 	'V'         => \$opts->{'ourversion'},
 ) or do{ print "Error parsing arguments\n"; usage(255);};
 
 
 
-if(exists($opts->{'ourversion'})){
+if($opts->{'ourversion'}){
 	version();
 	exit 0;
 }
 
-if(exists($opts->{'help'})){
+if($opts->{'help'}){
 	usage(0);
 }
 
@@ -38,6 +39,36 @@ my $versions = documentRoot($dir);
 if(defined($opts->{'version'}) && $opts->{'version'} eq ""){
 	print $versions->{'wp_version'}, "\n";	
 	exit 0;
+}
+
+if($opts->{'fixperms'}){
+	unless($opts->{'unixuser'}){
+		$opts->{'unixuser'} = guessUnixUser();
+		print color 'red';
+		print "Guessed user as $opts->{'unixuser'}\n";
+		print color 'reset';
+	}
+	print "\nCommands to run:\n ";
+	my @commands = getFixPermsCommands($opts->{'unixuser'});
+	print join("\n ", @commands), "\n";
+	print "Hit ctrl-C to abort, anything else to run them";
+	if(<STDIN>){
+		print "Carrying on!\n";
+	}
+	foreach my $cmd (@commands){
+		print "> $cmd ... ";
+		my $output = `$cmd 2>&1`;
+		if($? > 0){
+			chomp($output);
+			print color 'red';
+			print "FAILED\n $output\n";
+			print color 'reset';
+		}else{
+			print color 'green';
+			print "done\n";
+			print color 'reset';
+		}
+	}
 }
 
 if($opts->{'mysql'}){
@@ -131,7 +162,11 @@ print <<"EOF";
     --fix          Check MD5Sums and replace changed files with new ones
     --help         See this help
     --mysql        Start a MySQL shell using credentials in wp-config.php
+    --perms        Guess at sensible fs ownership and permissions; prompt 
+                   to set them
+    --user [name]  Override the unix user guessed by --perms
     --version      Print Wordpress version
+    -V             Print the version of wp-tool
 EOF
 
 exit $exit;
